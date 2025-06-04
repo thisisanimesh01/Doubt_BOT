@@ -1,347 +1,243 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Doubt Bot</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <title>Doubt Resolution Bot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    /* Reset and base */
-    *, *::before, *::after {
-      box-sizing: border-box;
+    :root {
+      --bg: #ffffff;
+      --text: #000000;
+      --box-bg: #d3d3d3;
+      --answer-bg: #f2f2f2;
+      --button-bg: #2980b9;
+      --button-hover: #1c6ea4;
+      --highlight: #f1c40f;
     }
+
+    body.dark {
+      --bg: #121212;
+      --text: #f5f5f5;
+      --box-bg: #2c2c2c;
+      --answer-bg: #1f1f1f;
+      --button-bg: #3a8ddc;
+      --button-hover: #296fa8;
+      --highlight: #f1c40f;
+    }
+
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(to right, #d7e1ec, #f8f9fb);
-      min-height: 100vh;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 60px 20px;
-      transition: background-color 0.3s ease;
-      color: #222;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
     }
 
-    /* Dark mode base */
-    [data-theme="dark"] body {
-      background: linear-gradient(to right, #1e1e2f, #2a2a40);
-      color: #ddd;
+    .toggle-mode {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: var(--button-bg);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
     }
 
-    .container {
-      background: #fff;
-      max-width: 720px;
-      width: 100%;
-      padding: 40px 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      animation: fadeIn 0.6s ease-in-out;
-      position: relative;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-    [data-theme="dark"] .container {
-      background: #2e2e42;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-      color: #ddd;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px);}
-      to { opacity: 1; transform: translateY(0);}
-    }
-
-    h1 {
+    .about-box {
+      background-color: var(--box-bg);
+      width: 70%;
+      margin-top: 70px;
+      border-radius: 40px;
+      padding: 30px;
+      font-size: 1.1rem;
+      font-weight: 500;
       text-align: center;
-      font-size: 32px;
-      margin-bottom: 30px;
-      font-weight: 700;
-      color: inherit;
+      line-height: 1.7;
     }
 
-    label {
-      font-weight: 600;
-      font-size: 18px;
-      display: block;
-      margin-bottom: 10px;
-      color: inherit;
+    .about-box h2 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+    }
+
+    .bot-container {
+      width: 80%;
+      max-width: 800px;
+      margin-top: 30px;
     }
 
     textarea {
       width: 100%;
-      padding: 16px;
+      padding: 15px;
       font-size: 16px;
-      border-radius: 10px;
-      border: 1.8px solid #ccc;
-      resize: vertical;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      font-family: inherit;
-      min-height: 100px;
-      color: #222;
-      background-color: #fff;
-    }
-    textarea:focus {
-      border-color: #005eff;
-      box-shadow: 0 0 0 4px rgba(0,94,255,0.25);
-      outline: none;
-      background-color: #fff;
-      color: #222;
-    }
-    [data-theme="dark"] textarea {
-      background-color: #3b3b55;
-      border-color: #555;
-      color: #eee;
-    }
-    [data-theme="dark"] textarea:focus {
-      border-color: #3399ff;
-      box-shadow: 0 0 0 4px rgba(51,153,255,0.35);
-      background-color: #434365;
-      color: #eee;
-    }
-
-    .buttons {
-      margin-top: 20px;
-      display: flex;
-      gap: 15px;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
-    button {
-      flex: 1 1 auto;
-      min-width: 100px;
-      padding: 14px 30px;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
+      margin-top: 10px;
       border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      user-select: none;
-      color: white;
-    }
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
+      border: 1px solid #ccc;
+      resize: vertical;
+      background: var(--bg);
+      color: var(--text);
     }
 
-    #submitButton {
-      background-color: #005eff;
-    }
-    #submitButton:hover:not(:disabled) {
-      background-color: #0041cc;
-    }
-
-    #clearButton {
-      background-color: #999;
-    }
-    #clearButton:hover:not(:disabled) {
-      background-color: #666;
-    }
-
-    /* Spinner */
-    .spinner {
-      margin: 30px auto 0;
-      width: 48px;
-      height: 48px;
-      border: 6px solid #ccc;
-      border-top: 6px solid #005eff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      display: none;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Answer box styling */
-    #answerBox {
-      margin-top: 40px;
-      padding: 28px 30px;
-      background-color: #f0f4ff;
-      border-left: 6px solid #005eff;
-      border-radius: 12px;
-      font-size: 17px;
-      color: #222;
-      line-height: 1.6;
-      animation: fadeIn 0.5s ease-in-out;
-      box-shadow: 0 3px 15px rgba(0, 94, 255, 0.1);
-      white-space: pre-line;
-    }
-    #answerBox h2 {
-      margin-top: 0;
-      margin-bottom: 16px;
-      font-size: 22px;
-      font-weight: 700;
-      color: #005eff;
-      user-select: none;
-    }
-    #answerBox p {
-      margin-bottom: 12px;
-    }
-    #answerBox strong, #answerBox b {
-      color: #0041cc;
-      font-weight: 600;
-    }
-    #answerBox ul {
-      padding-left: 20px;
-      margin: 12px 0 12px 0;
-    }
-    #answerBox li {
-      margin-bottom: 8px;
-    }
-    #answerBox em {
-      font-style: italic;
-      color: #555;
-    }
-
-    /* Dark mode answer box */
-    [data-theme="dark"] #answerBox {
-      background-color: #383b55;
-      color: #ddd;
-      border-left-color: #3399ff;
-      box-shadow: 0 3px 15px rgba(51, 153, 255, 0.3);
-    }
-    [data-theme="dark"] #answerBox h2 {
-      color: #66aaff;
-    }
-    [data-theme="dark"] #answerBox strong, [data-theme="dark"] #answerBox b {
-      color: #99bbff;
-    }
-    [data-theme="dark"] #answerBox em {
-      color: #bbb;
-    }
-
-    /* Dark mode toggle button */
-    #toggleThemeBtn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background-color: transparent;
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
       border: none;
-      font-size: 22px;
+      background-color: var(--button-bg);
+      color: white;
+      border-radius: 5px;
       cursor: pointer;
-      color: #005eff;
-      user-select: none;
-      transition: color 0.3s ease;
-    }
-    #toggleThemeBtn:hover {
-      color: #0041cc;
-    }
-    [data-theme="dark"] #toggleThemeBtn {
-      color: #99bbff;
-    }
-    [data-theme="dark"] #toggleThemeBtn:hover {
-      color: #66aaff;
     }
 
-    /* Responsive */
-    @media (max-width: 480px) {
-      .container {
-        padding: 30px 20px;
-      }
-      button {
-        min-width: 48%;
-      }
+    button:hover {
+      background-color: var(--button-hover);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .answer-box {
+      margin-top: 30px;
+      background-color: var(--answer-bg);
+      border-left: 6px solid var(--button-bg);
+      padding: 20px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      border-radius: 8px;
+    }
+
+    .markdown-body {
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text);
+    }
+
+    .markdown-body h1,
+    .markdown-body h2,
+    .markdown-body h3 {
+      margin-top: 1em;
+      font-weight: bold;
+    }
+
+    .markdown-body p {
+      margin: 0.5em 0;
+    }
+
+    .markdown-body ul {
+      padding-left: 20px;
+      list-style-type: disc;
+    }
+
+    .markdown-body ol {
+      padding-left: 20px;
+      list-style-type: decimal;
+    }
+
+    .markdown-body code {
+      background-color: #eee;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    .markdown-body pre {
+      background-color: #222;
+      color: #f8f8f2;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1em 0;
+    }
+
+    .markdown-body table, th, td {
+      border: 1px solid #ccc;
+    }
+
+    .markdown-body th, .markdown-body td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    .markdown-body blockquote {
+      margin: 1em 0;
+      padding: 0.5em 1em;
+      background-color: #f9f9f9;
+      border-left: 5px solid var(--button-bg);
+    }
+
+    .search-box {
+      background-color: var(--box-bg);
+      width: 80%;
+      max-width: 800px;
+      height: 60px;
+      margin: 40px 0;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div class="container" id="container">
-    <button id="toggleThemeBtn" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
 
-    <h1>Ask Doubt Bot</h1>
+  <button class="toggle-mode" onclick="toggleMode()">Mode</button>
 
-    <form method="POST" onsubmit="handleSubmit(event)">
-      <!-- CSRF token placeholder -->
+  <!-- About Section -->
+  <div class="about-box">
+    <h2>About Me</h2>
+    <p>
+      Hi! I’m <strong>Animesh Yadav</strong>, a passionate Computer Science student at Chandigarh University specializing in Artificial Intelligence and Machine Learning. I’m driven by a vision to build AI-powered solutions that solve real-world problems, from healthcare innovations to assistive technologies. With strong skills in Python, C++, web development, and practical hackathon experience, I thrive at the intersection of creativity and code.
+    </p>
+  </div>
+
+  <!-- Doubt Bot Section -->
+  <div class="bot-container">
+    <h2 style="text-align:center;">Ask Your Academic Doubt</h2>
+    <form method="post">
       {% csrf_token %}
-      
-      <label for="question">Your Question:</label>
-      <textarea
-        id="question"
-        name="question"
-        rows="4"
-        placeholder="Type your doubt here..."
-        aria-describedby="questionHelp"
-        required
-      >{{ question }}</textarea>
-      
-      <div class="buttons">
-        <button type="submit" id="submitButton">Submit</button>
-        <button type="button" id="clearButton">Clear</button>
+      <textarea name="question" id="questionBox" rows="4" placeholder="Enter your question here...">{{ question }}</textarea><br>
+      <div class="btn-group">
+        <button type="submit">Ask</button>
+        <button type="button" onclick="clearText()">Clear</button>
       </div>
     </form>
 
-    <!-- Spinner -->
-    <div class="spinner" id="loadingSpinner" role="status" aria-live="polite" aria-label="Loading"></div>
-
-    <!-- Answer -->
     {% if answer %}
-      <div id="answerBox" role="region" aria-live="polite" aria-atomic="true">
-        <h2>Doubt Bot's Answer:</h2>
-        <div>
-          {{ answer | safe }}
-        </div>
+    <div class="answer-box">
+      <h3>Answer:</h3>
+      <div id="formatted-answer" class="markdown-body">
+        {{ answer|safe }}
       </div>
+    </div>
     {% endif %}
   </div>
 
   <script>
-    // Theme toggle functionality
-    (function () {
-      const toggleBtn = document.getElementById('toggleThemeBtn');
-      const root = document.documentElement;
-
-      // Load saved theme from localStorage or default to light
-      const savedTheme = localStorage.getItem('doubtBotTheme') || 'light';
-      root.setAttribute('data-theme', savedTheme);
-      toggleBtn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-
-      toggleBtn.addEventListener('click', () => {
-        const currentTheme = root.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        root.setAttribute('data-theme', newTheme);
-        localStorage.setItem('doubtBotTheme', newTheme);
-        toggleBtn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-      });
-    })();
-
-    // Handle form submission
-    function handleSubmit(event) {
-      // Show spinner and disable submit button
-      const submitBtn = document.getElementById('submitButton');
-      const spinner = document.getElementById('loadingSpinner');
-
-      submitBtn.disabled = true;
-      spinner.style.display = 'inline-block';
-
-      // Let form submit naturally to backend for processing
-      // Spinner will show until page reload or response
-
-      // Optional: if you want to do AJAX, you can implement fetch/XHR here
-
-      // No need to call event.preventDefault() if you want traditional submit
+    function clearText() {
+      document.getElementById("questionBox").value = "";
     }
 
-    // Clear button functionality
-    document.getElementById('clearButton').addEventListener('click', () => {
-      const textarea = document.getElementById('question');
-      textarea.value = '';
-      textarea.focus();
-
-      // Remove answer if visible
-      const answerBox = document.getElementById('answerBox');
-      if (answerBox) {
-        answerBox.innerHTML = '';
-        answerBox.style.display = 'none';
-      }
-
-      // Enable submit button
-      const submitBtn = document.getElementById('submitButton');
-      submitBtn.disabled = false;
-
-      // Hide spinner if shown
-      const spinner = document.getElementById('loadingSpinner');
-      spinner.style.display = 'none';
-    });
+    function toggleMode() {
+      document.body.classList.toggle("dark");
+    }
   </script>
+
 </body>
 </html>
