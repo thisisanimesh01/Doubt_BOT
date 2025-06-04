@@ -2,9 +2,10 @@
 
 Welcome to **Doubt Bot** — an intelligent and interactive web-based assistant designed to answer your academic or general questions instantly using powerful AI. Whether you're a student, a curious learner, or just someone looking for quick answers, this tool is for you!
 
-![Doubt Bot Screenshot](ss1.png)
-![Doubt Bot Screenshot](ss2.png)
 ![Doubt Bot Screenshot](ss3.png)
+![Doubt Bot Screenshot](ss2.png)
+
+![Doubt Bot Screenshot](ss1.png)
 
 ---
 
